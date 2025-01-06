@@ -59,13 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
   int get _totalPrice => _selectedMenus.fold(0, (sum, menu) => sum + menu['price'] as int);
 
   void _generateRandomMenu() {
-    if (_selectedMenus.length < 10) {
-      setState(() {
-        Random random = Random();
-        final randomMenu = _menuOptions[random.nextInt(_menuOptions.length)];
-        _selectedMenus.add(randomMenu);
-      });
-    }
+    setState(() {
+      Random random = Random();
+      final randomMenu = _menuOptions[random.nextInt(_menuOptions.length)];
+      _selectedMenus.add(randomMenu);
+    });
   }
 
   @override
