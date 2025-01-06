@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'Food.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo: Random Food Menu'),
     );
   }
 }
@@ -31,34 +31,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<int> _primeNumbers = [];
-  
- 
-  bool _isPrime(int number) {
-    if (number <= 1) return false;
-    for (int i = 2; i <= sqrt(number); i++) {
-      if (number % i == 0) {
-        return false;
-      }
-    }
-    return true;
-  }
+  final List<Map<String, dynamic>> _menuOptions = [
+    {
+      'name': 'Salad',
+      'price': 80,
+      'ingredients': ['Lettuce', 'Tomato', 'Cheese']
+    },
+    {
+      'name': 'Steak',
+      'price': 200,
+      'ingredients': ['Beef', 'Cheese', 'Potato']
+    },
+    {
+      'name': 'Pasta',
+      'price': 100,
+      'ingredients': ['Pasta', 'Cheese', 'Beef']
+    },
+    {
+      'name': 'Burger',
+      'price': 150,
+      'ingredients': ['Beef', 'Lettuce', 'Tomato', 'Cheese']
+    },
+  ];
 
-  int _generateRandomPrime() {
-    Random random = Random();
-    while (true) {
-      int number = random.nextInt(100) + 1; 
-      if (_isPrime(number)) {
-        return number;
-      }
-    }
-  }
+  List<Map<String, dynamic>> _selectedMenus = [];
 
-  // ฟังก์ชันสุ่มตัวเลขเฉพาะและเพิ่มเข้าไปใน list ทีละตัว
-  void _generateNextPrime() {
-    if (_primeNumbers.length < 10) {
+  int get _totalPrice => _selectedMenus.fold(0, (sum, menu) => sum + menu['price'] as int);
+
+  void _generateRandomMenu() {
+    if (_selectedMenus.length < 10) {
       setState(() {
-        _primeNumbers.add(_generateRandomPrime());
+        Random random = Random();
+        final randomMenu = _menuOptions[random.nextInt(_menuOptions.length)];
+        _selectedMenus.add(randomMenu);
       });
     }
   }
@@ -68,21 +73,32 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('${widget.title} - Total Price: $_totalPrice'),
       ),
       body: Center(
         child: ListView.builder(
-          itemCount: _primeNumbers.length,
+          itemCount: _selectedMenus.length,
           itemBuilder: (context, index) {
+            final menu = _selectedMenus[index];
             return ListTile(
-              title: Text('Item $index Phone number is ${_primeNumbers[index]}'),
+              leading: CircleAvatar(
+                backgroundColor: Colors.deepPurple[100],
+                child: Text(
+                  '${menu['price']}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
+              title: Text('Dish $index is ${menu['name']}'),
+              subtitle: Text(
+                'This menu ingredients are ${menu['ingredients'].join(', ')}',
+              ),
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _generateNextPrime, // เพิ่มจำนวนเฉพาะทีละตัว
-        tooltip: 'Generate Next Prime',
+        onPressed: _generateRandomMenu, // สุ่มเมนูอาหารใหม่
+        tooltip: 'Add Random Menu',
         child: const Icon(Icons.add),
       ),
     );
